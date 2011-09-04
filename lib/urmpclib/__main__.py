@@ -9,8 +9,6 @@ from configuration import config
 config.read('urmpclib/urmpc.conf.example')
 
 palette = configuration.extract_palette(config, 'palette')
-#print palette
-#import sys; sys.exit(0);
 
 mpc = urmpd.MPDClient()
 mpc.connect(config.mpd.host, int(config.mpd.port))
