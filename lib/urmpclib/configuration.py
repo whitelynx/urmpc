@@ -16,6 +16,7 @@ def extract_palette(config, section):
 			subkey = 'bg'
 		else:
 			continue
+		key = tuple(key.split('.'))
 		if key not in data:
 			data[key] = {}
 		data[key][subkey] = v

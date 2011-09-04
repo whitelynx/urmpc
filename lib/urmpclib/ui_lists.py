@@ -91,8 +91,8 @@ class ArtistWalker(IOWalker):
 		item = urwid.Text(item)
 		item.set_wrap_mode('clip')
 		item = urwid.AttrMap(item,
-		                     {None: 'library.column'},
-		                     {None: 'library.column.focus'})
+		                     {None: ('library', 'column')},
+		                     {None: ('library', 'column', 'focus')})
 		return item
 
 	def set_focus(self, focus):
@@ -131,8 +131,8 @@ class AlbumWalker(IOWalker):
 		item = urwid.Text(item)
 		item.set_wrap_mode('clip')
 		item = urwid.AttrMap(item,
-		                     {None: 'library.column'},
-		                     {None: 'library.column.focus'})
+		                     {None: ('library', 'column')},
+		                     {None: ('library', 'column', 'focus')})
 		return item
 
 	def set_focus(self, focus):
@@ -182,8 +182,8 @@ class TrackWalker(IOWalker):
 		text = urwid.Text(text)
 		text.set_wrap_mode('clip')
 		text = urwid.AttrMap(text,
-		                     {None: 'library.column'},
-		                     {None: 'library.column.focus'})
+		                     {None: ('library', 'column')},
+		                     {None: ('library', 'column', 'focus')})
 		return text
 
 	def change_album(self, artist_album):
@@ -306,18 +306,8 @@ class NowPlayingWalker(IOWalker):
 
 		return urwid.AttrMap(
 			item,
-			{
-				'time': 'playlist.time',
-				'artist': 'playlist.artist',
-				'title': 'playlist.title',
-				'album': 'playlist.album',
-			},
-			{
-				'time': 'playlist.time.focus',
-				'artist': 'playlist.artist.focus',
-				'title': 'playlist.title.focus',
-				'album': 'playlist.album.focus',
-			},
+			{'*': 'playlist',},
+			{'*': ('playlist', 'focus'),},
 		)
 
 	def set_focus(self, focus):

@@ -130,9 +130,9 @@ class MainFooter(urwid.WidgetWrap):
 		self.mpc = mpc
 		self._notification_bar = urwid.Text('')
 		self._progress_bar = CurrentSongProgress(mpc,
-		                                         'footer.progress',
-		                                         'footer.progress.elapsed',
-		                                         satt='footer.progress.smoothed')
+		                                         ('footer', 'progress'),
+		                                         ('footer', 'progress', 'elapsed'),
+		                                         satt=('footer', 'progress', 'smoothed'))
 		signals.listen('user_notification', self.notify)
 		signals.listen('idle_update', self._notify_update)
 		signals.listen('idle_playlist', self._playlist_update)
@@ -269,11 +269,11 @@ class MainHeader(urwid.Pile):
 
 		self.flags = DaemonFlags(mpc)
 		width = self.flags.pack()[0]
-		self.flags = urwid.AttrMap(self.flags, 'header.flags', 'header.flags')
+		self.flags = urwid.AttrMap(self.flags, ('header', 'flags'))
 
 		self.topline = urwid.Columns((self.currentsong, ('fixed', width, self.flags)))
 
 		border = urwid.Divider('─')
-		self.border = urwid.AttrMap(border, 'header.border', 'header.border')
+		self.border = urwid.AttrMap(border, ('header', 'border'))
 		super(MainHeader, self).__init__((self.topline, self.border))
 

@@ -98,7 +98,7 @@ class LibraryPanel(urwid.Columns):
 		self.albums = albums
 		self.tracks = tracks
 
-		attr = 'library.divider'
+		attr = 'library', 'divider'
 		divstr = config.library.divider
 		div1 = urwid.AttrWrap(util.VDivider(divstr), attr, attr)
 		div2 = urwid.AttrWrap(util.VDivider(divstr), attr, attr)
