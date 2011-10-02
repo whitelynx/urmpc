@@ -91,6 +91,7 @@ class CurrentSongProgress(ProgressBar_):
 			if self._progress_alarm is not None:
 				signals.alarm_remove(self._progress_alarm)
 				self._progress_alarm = None
+			return
 		self._stopped = False
 
 		# Something changed, better recalculate.
@@ -168,6 +169,7 @@ class CurrentSong(urwid.Text):
 	def _player_update(self):
 		if self.mpc.status()['state'] == 'stop':
 			self.set_text('')
+			return
 
 		item = self.mpc.currentsong()
 		if 'artist' not in item: item['artist'] = config.format.empty_tag
