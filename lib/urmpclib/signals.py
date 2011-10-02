@@ -54,9 +54,3 @@ def alarm_remove(handle):
 	except AttributeError as e:
 		pass # Not fully initialized, no big deal. Might want it on debug log.
 
-def redraw():
-	try:
-		return _mainloop.draw_screen()
-	except AttributeError as e:
-		pass # Not fully initialized, no big deal. Might want it on debug log.
-

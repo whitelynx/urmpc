@@ -1,6 +1,5 @@
 import datetime
 import urwid
-import signals
 
 class timedelta(datetime.timedelta):
 	"""Format times in a manner suitable for music.
@@ -65,8 +64,6 @@ class WidgetMux(urwid.WidgetWrap):
 		target = self.widget_dict[name]
 		if self._w is not target:
 			self._w = target
-		else:
-			signals.redraw()
 
 	def current(self):
 		"""Gets name of the widget currently being displayed."""

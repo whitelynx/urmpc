@@ -25,8 +25,8 @@ if __name__ == '__main__':
 	frame = MainFrame(mpc)
 	loop.widget = frame
 
-	# Idler runs cloned mpc connection, uses MainLoop to force redraw on MPD events
-	idler = urmpd.Idler(mpc, loop)
+	# Idler runs cloned mpc connection
+	idler = urmpd.Idler(mpc)
 	event_loop.watch_file(idler, idler)
 
 	try:

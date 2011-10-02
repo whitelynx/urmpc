@@ -91,7 +91,6 @@ class CurrentSongProgress(ProgressBar_):
 			if self._progress_alarm is not None:
 				signals.alarm_remove(self._progress_alarm)
 				self._progress_alarm = None
-			return True
 		self._stopped = False
 
 		# Something changed, better recalculate.
@@ -99,8 +98,6 @@ class CurrentSongProgress(ProgressBar_):
 		current, done = map(int, status['time'].split(':'))
 		self.set_completion(current)
 		self.set_finished(done)
-
-		signals.redraw()
 
 		if self._progress_alarm is not None:
 			signals.alarm_remove(self._progress_alarm)
@@ -112,7 +109,6 @@ class CurrentSongProgress(ProgressBar_):
 	def _progress_increment(self, *_):
 		self._progress_alarm = signals.alarm_in(1.0, self._progress_increment)
 		self.set_completion(self.current+1)
-		signals.redraw()
 
 class MainFooter(util.WidgetMux):
 	mpc = None
@@ -152,7 +148,6 @@ class MainFooter(util.WidgetMux):
 		self._notification = (None, None)
 		self._notification_alarm = None
 		self.switch('progress_bar')
-		return False
 
 	def _notify_update(self):
 		if 'updating_db' not in self.mpc.status():
@@ -173,14 +168,12 @@ class CurrentSong(urwid.Text):
 	def _player_update(self):
 		if self.mpc.status()['state'] == 'stop':
 			self.set_text('')
-			return True
 
 		item = self.mpc.currentsong()
 		if 'artist' not in item: item['artist'] = config.format.empty_tag
 		if 'title' not in item: item['title'] = config.format.empty_tag
 
 		self.set_text('%s: %s' % (item['artist'], item['title']))
-		return True
 
 class DaemonFlags(urwid.Text):
 	_flags = {}
@@ -215,7 +208,7 @@ class DaemonFlags(urwid.Text):
 	def _options_update(self):
 		newflags = self._get_flags()
 		if newflags == self._flags:
-			return False
+			return
 
 		message = None
 		onoff = lambda b: 'On' if b else 'Off'
@@ -232,7 +225,7 @@ class DaemonFlags(urwid.Text):
 			signals.emit('user_notification', message)
 
 		self._flags = newflags
-		return self._render_flags()
+		self._render_flags()
 
 	def _render_flags(self):
 		output = []
@@ -244,7 +237,6 @@ class DaemonFlags(urwid.Text):
 
 		output = '['+ ''.join(output) +']'
 		self.set_text(output)
-		return True
 
 class MainHeader(urwid.Pile):
 	def __init__(self, mpc):

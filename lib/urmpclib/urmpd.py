@@ -144,11 +144,9 @@ class MPDClient(mpd.MPDClient):
 
 class Idler(MPDClient):
 	"""Idles for MPD events and reports them."""
-	_mainloop = None
-	def __init__(self, mainmpc, mainloop):
+	def __init__(self, mainmpc):
 		"""Steal credentials from main connection and starts idling."""
 		super(Idler, self).__init__()
-		self._mainloop = mainloop
 		self._host_port = mainmpc._host_port
 		self.send_idle()
 
@@ -158,10 +156,6 @@ class Idler(MPDClient):
 		events = self.fetch_idle()
 		self.send_idle()
 
-		# Emit events, force redraw if necessary
-		redraw = False
 		for event in events:
-			redraw |= signals.emit('idle_'+event)
-		if redraw:
-			self._mainloop.draw_screen()
+			signals.emit('idle_'+event)
 
