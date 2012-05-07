@@ -115,12 +115,12 @@ class CurrentSongProgress(ProgressBar_):
 		signals.redraw()
 
 class MainFooter(util.WidgetMux):
-	mpc = None
-	_notification = None, None
-	_notification_alarm = None
-
-	def __init__(self, mpc):
+	def __init__(self, mpc, parent):
 		self.mpc = mpc
+		self.parent = parent
+		self._notification = None, None
+		self._notification_alarm = None
+		self.main_panel = 'progress_bar'
 		notifications = urwid.Text('')
 		progress = CurrentSongProgress(mpc,
 			 'footer.progress',
@@ -128,12 +128,13 @@ class MainFooter(util.WidgetMux):
 			 satt='footer.progress.smoothed')
 
 		widgets = {'progress_bar': progress, 'notification_bar': notifications}
-		super(MainFooter, self).__init__(widgets, 'progress_bar')
+		super(MainFooter, self).__init__(widgets, self.main_panel)
 
 		signals.listen('user_notification', self.notify)
+		signals.listen('user_interactive', self.interaction)
+		signals.listen('user_interactive_end', self.interaction_end)
 		signals.listen('idle_update', self._notify_update)
 		signals.listen('idle_playlist', self._playlist_update)
-
 
 	def notify(self, message, interval=1.0): #TODO: Config interval default.
 		"""Adds a notification to be displayed in the status bar.
@@ -148,10 +149,22 @@ class MainFooter(util.WidgetMux):
 		self.widget_dict['notification_bar'].set_text(str(message))
 		self.switch('notification_bar')
 
+	def interaction(self, widget):
+		"""Temporarily display another widget for user input."""
+		self.widget_dict['interactive'] = widget
+		self.main_panel = 'interactive'
+		self.switch('interactive')
+		self.parent.set_focus('footer')
+
+	def interaction_end(self):
+		self.main_panel = 'progress_bar'
+		self.switch(self.main_panel)
+		self.parent.set_focus('body')
+
 	def _clear_notification(self, *_):
 		self._notification = (None, None)
 		self._notification_alarm = None
-		self.switch('progress_bar')
+		self.switch(self.main_panel)
 		return False
 
 	def _notify_update(self):

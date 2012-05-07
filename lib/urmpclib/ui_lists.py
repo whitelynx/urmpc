@@ -1,3 +1,4 @@
+import re
 import urwid
 import mpd
 
@@ -8,6 +9,7 @@ from configuration import config
 
 class IOWalker(urwid.ListWalker):
 	def __init__(self):
+		self.previous_search = None
 		self.focus = 0
 		self.items = []
 		self._reload()
@@ -62,6 +64,40 @@ class IOWalker(urwid.ListWalker):
 		self._modified()
 		return True
 
+	def init_search(self):
+		searchbox = util.SearchLine(self.submit_search)
+		signals.emit('user_interactive', searchbox)
+
+	def submit_search(self, input=None):
+		signals.emit('user_interactive_end')
+
+		if input is None:
+			if self.previous_search is None:
+				return
+			input = self.previous_search
+
+		try:
+			results = sorted(self._search_query(input))
+		except re.error as e:
+			signals.emit('user_notification', 'Invalid regexp: %s' % input)
+			return
+
+		self.previous_search = input
+
+		next = None
+		try:
+			next = [x for x in results if x > self.focus][0]
+		except IndexError as e:
+			if len(results) > 0:
+				if results[0] == self.focus:
+					return # Only match
+				next = results[0]
+
+		if next is None:
+			signals.emit('user_notification', 'Not found: %s' % input)
+			return
+		self.set_focus(next)
+
 	# Override these.
 	def _get_items(self):
 		"""Returns a fresh copy of the items from the datastore."""
@@ -69,6 +105,14 @@ class IOWalker(urwid.ListWalker):
 	def _format(self, item):
 		"""Returns a widget suitable for display."""
 		return item
+	def _search_query(self, text): # In many cases this doesn't need overriding.
+		"""Returns indexes of items containing text."""
+		pattern = re.compile(text, re.IGNORECASE)
+		output = []
+		for i in range(len(self.items)):
+			if pattern.search(str(self.items[i])):
+				output.append(i)
+		return output
 
 @signals.sends_signal('change')
 class ArtistWalker(IOWalker):
@@ -233,6 +277,8 @@ class TreeList(urwid.ListBox):
 			'down': lambda s: self._keypress_down(s),
 			'home': lambda _: self._scroll_top(),
 			'end': lambda _: self._scroll_bottom(),
+			'search': lambda _: self.body.init_search(),
+			'search_again': lambda _: self.body.submit_search(),
 		}
 		self.keymap = configuration.KeyMapper(actionmap, config.keymap.list)
 		return super(TreeList, self).__init__(*args, **kwargs)

@@ -49,15 +49,15 @@ class MainFrame(urwid.Frame):
 
 		body = util.WidgetMux(self.panel_dict, 'library')
 		header = ui_status.MainHeader(mpc)
-		footer = ui_status.MainFooter(mpc)
+		footer = ui_status.MainFooter(mpc, self)
 
 		super(MainFrame, self).__init__(body, header=header, footer=footer)
 
 	def keypress(self, size, key):
-		if key in self.keymap:
-			return self.keymap(size, key)
-		else:
-			return super(MainFrame, self).keypress(size, key)
+		key = super(MainFrame, self).keypress(size, key)
+		if key and key in self.keymap:
+			key = self.keymap(size, key)
+		return key
 
 	def toggle_panel(self):
 		current = self.get_body().current()

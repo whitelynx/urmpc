@@ -73,3 +73,15 @@ class WidgetMux(urwid.WidgetWrap):
 		name = [k for k, v in self.widget_dict.items() if v is self._w] + [None]
 		return name[0]
 
+class SearchLine(urwid.Edit):
+	def __init__(self, result_callable):
+		self.submit = result_callable
+		super(SearchLine, self).__init__(caption='Find: ')
+
+	def keypress(self, size, key):
+		if key == 'enter':
+			input = self.get_edit_text()
+			self.submit(input)
+			return None
+		return super(SearchLine, self).keypress(size, key)
+
